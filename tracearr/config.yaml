@@ -11,3 +11,5 @@ map:
   - addon_config:rw
 options: {}
 schema: {}
+icon: "icon.png"
+logo: "logo.png"
