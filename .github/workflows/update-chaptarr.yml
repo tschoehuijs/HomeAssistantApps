@@ -20,7 +20,7 @@ jobs:
       - name: Fetch latest Chaptarr version
         id: fetch_version
         run: |
-          LATEST=$(curl -s https://api.github.com/repos/robertlordhood/chaptarr/releases/latest | jq -r .tag_name | sed 's/^v//')
+          LATEST=$(curl -s "https://hub.docker.com/v2/repositories/robertlordhood/chaptarr/tags/?page_size=15" | jq -r '.results[].name' | grep -E '^[0-9]' | head -n 1)
           echo "LATEST_VERSION=$LATEST" >> $GITHUB_ENV
 
       - name: Update config.yaml
