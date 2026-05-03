@@ -1,35 +1,19 @@
-name: Update Chaptarr Version
-
-on:
-  schedule:
-    - cron: "0 1 * * *"
-  workflow_dispatch:
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
-jobs:
-  update-version:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Fetch latest Chaptarr version
-        id: fetch_version
-        run: |
-          LATEST=$(curl -s "https://hub.docker.com/v2/repositories/robertlordhood/chaptarr/tags/?page_size=50" | jq -r '.results[].name' | grep -E '^[0-9]' | sort -rV | head -n 1)
-          echo "LATEST_VERSION=$LATEST" >> $GITHUB_ENV
-
-      - name: Update config.yaml
-        run: |
-          sed -i "s/^version: .*/version: \"${{ env.LATEST_VERSION }}\"/" chaptarr/config.yaml
-
-      - name: Commit and push if changed
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add chaptarr/config.yaml
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Bump Chaptarr to ${{ env.LATEST_VERSION }}" && git push)
+name: "Chaptarr"
+version: "0.9"
+slug: "chaptarr"
+description: "The Modern Readarr Replacement (Alpha)"
+url: "https://github.com/robertlordhood/chaptarr"
+arch:
+  - aarch64
+  - amd64
+startup: application
+boot: auto
+panel_icon: mdi:book-open-variant
+ports:
+  8789/tcp: 8789
+map:
+  - media:rw
+  - config:rw
+  - share:rw
+options: {}
+schema: {}
