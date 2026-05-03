@@ -20,7 +20,7 @@ jobs:
 
       - name: Update config.yaml
         run: |
-          sed -i "s/^version: .*/version: \"${{ env.LATEST_VERSION }}\"/" tracearr/config.yaml
+          sed -i "s/^version: .*/version: \"${{ env.LATEST_VERSION }}\"/" Tracearr/config.yaml
 
       - name: Commit and push if changed
         run: |
