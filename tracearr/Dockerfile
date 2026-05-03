@@ -1,0 +1,1 @@
+FROM ghcr.io/connorgallopo/tracearr:supervised
