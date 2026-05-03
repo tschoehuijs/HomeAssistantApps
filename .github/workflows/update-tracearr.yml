@@ -5,9 +5,14 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   update-version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,7 +25,7 @@ jobs:
 
       - name: Update config.yaml
         run: |
-          sed -i "s/^version: .*/version: \"${{ env.LATEST_VERSION }}\"/" Tracearr/config.yaml
+          sed -i "s/^version: .*/version: \"${{ env.LATEST_VERSION }}\"/" tracearr/config.yaml
 
       - name: Commit and push if changed
         run: |
