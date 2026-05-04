@@ -1,6 +1,6 @@
 name: "Tracearr"
 description: "Real-time monitoring for Plex, Jellyfin, and Emby."
-version: "1.0.0"
+version: "1.4.27"
 slug: "tracearr"
 arch:
   - aarch64
