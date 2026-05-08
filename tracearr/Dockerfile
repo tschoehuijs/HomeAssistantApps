@@ -1,15 +1,14 @@
 FROM ghcr.io/connorgallopo/tracearr:supervised
 
-COPY run.sh /run.sh
-
-# Prove at BUILD TIME what's inside the image and whether the file is executable / has CRLF
+# Create /run.sh inside the image (avoids CRLF/shebang issues from GitHub Desktop/Windows)
 RUN set -eux; \
-    ls -la /run.sh; \
-    file /run.sh || true; \
-    head -n 1 /run.sh | cat -A; \
-    sed -n '1,3p' /run.sh | cat -A; \
-    chmod 755 /run.sh; \
-    ls -la /run.sh
+  cat > /run.sh <<'EOF'\n\
+#!/bin/sh\n\
+set -e\n\
+exec /entrypoint-supervised.sh\n\
+EOF\n\
+  && chmod 755 /run.sh \
+  && ls -la /run.sh
 
+# Ensure the container runs the script in a predictable way
 CMD ["sh", "/run.sh"]
-``
