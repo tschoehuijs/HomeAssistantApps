@@ -1,24 +1,26 @@
-#!/usr/bin/with-contenv bash
-set -e
+#!/bin/bash
+set -euo pipefail
 
-BASE="/config/tracearr"
+BASE="/config"
 
-echo "[Tracearr] Ensuring persistent storage in ${BASE}"
+echo "[Tracearr] Using persistent add-on config folder: ${BASE}"
 
 mkdir -p \
-  ${BASE}/postgres \
-  ${BASE}/redis \
-  ${BASE}/tracearr \
-  ${BASE}/backup
+  "${BASE}/postgres" \
+  "${BASE}/redis" \
+  "${BASE}/tracearr" \
+  "${BASE}/backup"
 
-# Remove transient locations if they exist
+# Ensure Tracearr internal expected paths point to our persisted locations
 rm -rf /data/postgres /data/redis /data/tracearr /data/backup || true
 
-ln -s ${BASE}/postgres  /data/postgres
-ln -s ${BASE}/redis     /data/redis
-ln -s ${BASE}/tracearr  /data/tracearr
-ln -s ${BASE}/backup    /data/backup
+ln -s "${BASE}/postgres"  /data/postgres
+ln -s "${BASE}/redis"     /data/redis
+ln -s "${BASE}/tracearr"  /data/tracearr
+ln -s "${BASE}/backup"    /data/backup
 
-echo "[Tracearr] Persistent storage wired up successfully"
+echo "[Tracearr] Symlinks:"
+ls -la /data || true
 
+# Start the original Tracearr supervised entrypoint
 exec /entrypoint-supervised.sh
