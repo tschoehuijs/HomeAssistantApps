@@ -12,12 +12,8 @@ panel_icon: mdi:book-open-variant
 ports:
   8789/tcp: 8789
 map:
-  - type: share
-    read_only: false
-  - type: media
-    read_only: false
-  - type: addon_config
-    read_only: false
-    path: /config
+  - media:rw
+  - config:rw
+  - share:rw
 options: {}
 schema: {}
