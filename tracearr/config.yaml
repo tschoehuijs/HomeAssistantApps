@@ -1,6 +1,6 @@
 name: "Tracearr"
 description: "Real-time monitoring for Plex, Jellyfin, and Emby."
-version: "1.4.27.1"
+version: "1.4.27.2"
 slug: "tracearr"
 url: "https://github.com/connorgallopo/Tracearr"
 arch:
