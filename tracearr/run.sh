@@ -1,5 +1,5 @@
 #!/bin/sh
 set -e
 
-echo "[Tracearr] run.sh is executing"
+echo "[Tracearr] run.sh started"
 exec /entrypoint-supervised.sh
