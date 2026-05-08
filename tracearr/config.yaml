@@ -9,13 +9,9 @@ arch:
 ports:
   3000/tcp: 3000
 map:
-  - type: share
-    read_only: false
-  - type: media
-    read_only: false
-  - type: addon_config
-    read_only: false
-    path: /config
+  - config:rw
+  - share:rw
+  - media:rw
 options: {}
 schema: {}
 icon: "icon.png"
