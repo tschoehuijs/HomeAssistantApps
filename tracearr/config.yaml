@@ -9,7 +9,7 @@ arch:
 ports:
   3000/tcp: 3000
 map:
-  - config:rw
+  - addon_config:rw
   - share:rw
   - media:rw
 options: {}
