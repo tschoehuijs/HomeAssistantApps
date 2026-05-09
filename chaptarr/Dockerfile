@@ -4,5 +4,7 @@ FROM robertlordhood/chaptarr:latest
 ENV PUID=0
 ENV PGID=0
 
-# Force data to share folder (Persists data & fixes permissions)
-ENV DATA_DIR=/config/chaptarr
+# Force data to HA config subfolder
+ENV DATA_DIR=/config/addons_config/chaptarr
+
+CMD ["dotnet", "/app/Chaptarr.dll", "-nobrowser", "-data=/config/addons_config/chaptarr"]
