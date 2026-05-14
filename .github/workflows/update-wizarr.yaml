@@ -1,0 +1,49 @@
+name: Update Wizarr Version
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch latest Wizarr release
+        id: fetch_release
+        run: |
+          RELEASE_JSON=$(curl -s https://api.github.com/repos/wizarrrr/wizarr/releases/latest)
+
+          LATEST=$(echo "$RELEASE_JSON" | jq -r .tag_name | sed 's/^v//')
+          BODY=$(echo "$RELEASE_JSON" | jq -r .body)
+
+          echo "LATEST_VERSION=$LATEST" >> $GITHUB_ENV
+
+          {
+            echo "# Changelog"
+            echo
+            echo "## $LATEST"
+            echo
+            echo "$BODY"
+            echo
+          } > wizarr/CHANGELOG.md
+
+      - name: Update config.yaml
+        run: |
+          sed -i "s/^version: .*/version: \"${{ env.LATEST_VERSION }}\"/" wizarr/config.yaml
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add wizarr/config.yaml wizarr/CHANGELOG.md
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Bump Wizarr to ${{ env.LATEST_VERSION }}" && git push)
