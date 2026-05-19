@@ -87,4 +87,3 @@ jobs:
             --title "Wizarr ${{ env.LATEST_VERSION }}" \
             --notes-file "wizarr/RELEASE_NOTES.md" \
             --target "main"
-``
