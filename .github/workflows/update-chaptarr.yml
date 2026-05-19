@@ -5,23 +5,26 @@ on:
     - cron: "0 1 * * *"
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   update-version:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Fetch latest Chaptarr version
         id: fetch_version
         run: |
-          LATEST=$(curl -s "https://hub.docker.com/v2/repositories/robertlordhood/chaptarr/tags/?page_size=50" | jq -r '.results[].name' | grep -E '^[0-9]' | sort -rV | head -n 1)
-          echo "LATEST_VERSION=$LATEST" >> $GITHUB_ENV
+          LATEST=$(curl -s "https://hub.docker.com/v2/repositories/robertlordhood/chaptarr/tags/?page_size=50" \
+            | jq -r '.results[].name' \
+            | grep -E '^[0-9]' \
+            | sort -rV \
+            | head -n 1)
+
+          echo "LATEST_VERSION=$LATEST" >> "$GITHUB_ENV"
 
       - name: Update config.yaml
         run: |
