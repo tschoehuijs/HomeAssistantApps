@@ -1,60 +1,80 @@
 # Changelog
 
-## 2026.4.0
+## 2026.7.0
 
-# 🚀 Stable Release v2026.4.0
+# 🚀 Stable Release v2026.7.0
 
 ## What's Changed
 
 ### 🐛 Bug Fixes
-- prevent CASCADE data loss in LDAP migration and repair invitation_user
-- deduplicate wizard steps in multi-server setups and add bundle selection to API
-- restore get_recent_items parameter names broken by linting pass
+- handle multi-plex oauth invites
+- align static asset cache-busting in Plex login template
+- implement deterministic build lifecycle and dynamic cache busting
+- resolve external Bowser dependency and casing fallback
+- improve Service Worker update strategy and cache management
+- resolve persistent Service Worker cache-first WSOD lock-in
+- resolve White Screen of Death (WSOD) by serving external assets from clean vendor directories
+- use uv instead of broken pipx babel in verify-translations
+- merge Weblate contributions and prevent future lock conflicts
+- removed to prevent confusion
 
-### 🔧 Build System / Dependencies
-- bump alpinejs from 3.15.8 to 3.15.9 in /app/static
-- bump pygments from 2.19.2 to 2.20.0
-- bump setuptools from 82.0.0 to 82.0.1
-- bump gunicorn from 25.1.0 to 25.3.0
-- bump apprise from 1.9.7 to 1.9.9
-- bump ty from 0.0.19 to 0.0.26
-- bump ruff in the linting-tools group
-- bump @alpinejs/collapse in /app/static
-- bump tiny-markdown-editor in /app/static
+### 👷 CI/CD
+- announce releases on Discord (#1321)
+
+### 💄 Styling
+- use dynamic url_for query parameters and optimize context processor imports
 
 ### 🧹 Chores
 - 
+- 
+- 
 
 ### 📝 Other Changes
-- i18n: refresh POT and update PO files [skip ci]
-- i18n: refresh POT and update PO files [skip ci]
-- i18n: refresh POT and update PO files [skip ci]
+- Keep invite form open on errors
+- Fix invite library dropdown interactions (#1324)
+- Remove Blacksmith from workflows (#1325)
+- Validate invitation form submissions (#1322)
+- Bundle external frontend assets (#1320)
+- Fix recent onboarding and media-server bugs (#1318)
+- Fix unlimited invite only recording first user in Latest Accepted Invites
+- Fix multi-server Emby permissions
+- Remove mention of `PORT` and `HOST` options from docs
+- Add: `HOST` & `PORT` env vars for wizarr. This lets users override the address on which gunicorn binds. The change also updates the docs. fixes #1058
 
 
-**Full Changelog**: https://github.com/wizarrrr/wizarr/compare/v2026.4.0...v2026.4.0
+**Full Changelog**: https://github.com/wizarrrr/wizarr/compare/v2026.7.0...v2026.7.0
 
-## 📋 All Commits Included (16 commits)
+## 📋 All Commits Included (25 commits)
 
 <details>
 <summary>Click to expand commit list</summary>
 
 ```
-383e4db7 chore: release v2026.4.0
-4e6728c9 fix: prevent CASCADE data loss in LDAP migration and repair invitation_user
-6ebafbf3 fix: deduplicate wizard steps in multi-server setups and add bundle selection to API
-48471330 fix: restore get_recent_items parameter names broken by linting pass
-40e6871a build(deps): bump alpinejs from 3.15.8 to 3.15.9 in /app/static
-46f1e6d3 i18n: refresh POT and update PO files [skip ci]
-fdb18791 i18n: refresh POT and update PO files [skip ci]
-d70be00e build(deps): bump pygments from 2.19.2 to 2.20.0
-7ca11a2d build(deps): bump setuptools from 82.0.0 to 82.0.1
-7aa8abfe build(deps): bump gunicorn from 25.1.0 to 25.3.0
-14bfc9c9 build(deps): bump apprise from 1.9.7 to 1.9.9
-ad9d1b94 build(deps-dev): bump ty from 0.0.19 to 0.0.26
-444937b6 build(deps-dev): bump ruff in the linting-tools group
-d8588f55 build(deps): bump @alpinejs/collapse in /app/static
-acb27b8d build(deps): bump tiny-markdown-editor in /app/static
-d3af9edd i18n: refresh POT and update PO files [skip ci]
+0e63eee95 chore: release v2026.7.0
+7803cfd74 Keep invite form open on errors
+04e3b58a8 Fix invite library dropdown interactions (#1324)
+19b948b7b Remove Blacksmith from workflows (#1325)
+dda4d706e ci: announce releases on Discord (#1321)
+c10a0e191 Validate invitation form submissions (#1322)
+42fdbae8b Bundle external frontend assets (#1320)
+a9a2bcce5 chore: update dependencies (#1319)
+31005dcf8 Fix recent onboarding and media-server bugs (#1318)
+d30a3bdc2 Fix unlimited invite only recording first user in Latest Accepted Invites
+62d893403 Fix multi-server Emby permissions
+8e680388d fix: handle multi-plex oauth invites
+d91f4dc43 chore(deps): bulk-bump python and npm deps from open dependabot PRs (#1279)
+365d1d57f fix(frontend): align static asset cache-busting in Plex login template
+4b0eca0d3 style(flask): use dynamic url_for query parameters and optimize context processor imports
+a33d79dd4 fix(assets): implement deterministic build lifecycle and dynamic cache busting
+492d96c3e fix(assets): resolve external Bowser dependency and casing fallback
+123a96719 fix(pwa): improve Service Worker update strategy and cache management
+7a0f5fdcd fix(pwa): resolve persistent Service Worker cache-first WSOD lock-in
+a378d7668 fix: resolve White Screen of Death (WSOD) by serving external assets from clean vendor directories
+7fe3b3459 Remove mention of `PORT` and `HOST` options from docs
+59bc22931 fix(ci): use uv instead of broken pipx babel in verify-translations
+0e04feeeb fix(i18n): merge Weblate contributions and prevent future lock conflicts
+9dfcf1449 fix(docs): removed to prevent confusion
+c564f91fb Add: `HOST` & `PORT` env vars for wizarr. This lets users override the address on which gunicorn binds. The change also updates the docs. fixes #1058
 ```
 </details>
 
