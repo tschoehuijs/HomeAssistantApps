@@ -1,50 +1,42 @@
 # Changelog
 
-## 1.5.0
+## 2.0.0
 
-# Tracearr v1.5.0 - New Auth, True Merged Users Across Servers
+# Tracearr v2.0.0 - Media Library, One Identity Per Title, Public API v2
 
-**MAKE SURE YOU HAVE A BACKUP BEFORE UPGRADING.** It migrates auth and user
-data, and downgrading to 1.4.x afterward is not supported.
+**BACK UP BEFORE UPGRADING.** This release migrates the database heavily. If you need the escape hatch, a 1.5 backup restores cleanly on 2.0.
 
-### Auth
+### New Media section
 
-Login got rebuilt. Local username/password, Plex, and optional SSO (set
-OIDC_ISSUER_URL, OIDC_CLIENT_ID, and OIDC_CLIENT_SECRET and a provider button
-appears). Web users log in once after upgrading - old web sessions don't carry
-over. Mobile devices stay paired; devices paired after the upgrade use a
-90-day rolling session and re-pair after 90 idle days. Jellyfin credential
-login is gone; if that was your only way in, the docs site has password reset
-instructions.
+Browse your whole library as a poster wall with an A-Z rail and filters for library, resolution, HDR, size on disk, and watched - two-tone checkmark for "you watched" vs "someone watched". Detail pages list every copy of a title with per-file quality, library, and size. Genre breakdown, storage, and watch pages round it out.
 
-Behind a reverse proxy that rewrites the Host header? Forward X-Forwarded-Host
-(or set CORS_ORIGIN to your public URL) or cookie login won't stick.
+### One identity per title
 
-### Merge Users Across Servers
+The same movie on two servers is one row everywhere now - stats, leaderboards, history. Seasons and music get real identities too, and wrongly split titles heal themselves.
 
-Merge the same person's accounts across servers into one identity. Suggestions
-surface likely matches, and merges are reversible with split - even chained
-ones. Once merged, the whole app treats them as one person: one row on the
-Users page, leaderboards and unique viewers count people instead of accounts,
-profiles combine activity across servers, and rules can target a person on all
-their servers (per-rule toggle, off by default). Some counts will drop
-slightly - merged people are no longer double counted.
+### Every file counted
 
-### Bugfixes, Performance Increases, and Dependency Bumps
+Tracearr used to read a title's first file and drop the rest. Now every version is tracked: 4K + 1080p copies, duplicate libraries, mirrored files counted once. Storage totals are honest, duplicates catches same-server copies, sessions record which version actually played, and 1440p/8K no longer count as SD.
 
-- sessions no longer duplicate when SSE and reconciliation race
-- fixed poller overload under heavy concurrent streams
-- history page is a lot faster, pagination edge cases gone
-- fixed user sorting
-- login reconnects after a database restore
-- resolution labels trust the server and share one ladder, jobs page can
-  relabel old history
-- specials keep their season zero
-- mobile: recovers stuck requests after backgrounding, android banners sit
-  below the header, users tab stops printing the count twice
-- helm chart installs work again (a bad image pin broke fresh installs) and
-  the chart now tracks the release version
-- ~100 dependency updates under the hood; app image runs node 24 now, redis
-  image moved to v8
-- JF/Emby SSE improvements **MAKE SURE TO UPDATE PLUGIN**
+### Public API v2
+
+Bearer tokens, rate limits, OpenAPI docs served in-app. Built so apps that use Tautulli can use Tracearr instead.
+
+### Mobile: every tab, every server
+
+Rolling out with the 2.0 app update. Server selection is global now - pick All, one server, or any subset from any tab, and it sticks across restarts. It used to be a dashboard-only trick that quietly collapsed to one server everywhere else. Navigation got rebuilt on native tabs: the tab bar survives detail pushes, and the drawer is gone in favor of a server sheet and header buttons. Also in this round: iOS 26 header buttons stop flashing white on tab switches, the stream map matches the dark theme on both platforms, servers behind Tailscale are reachable on iOS again (App Transport Security was silently blocking them), and the UI primitives now speak to screen readers.
+
+### Under the hood
+
+- Plex library changes sync in seconds via server events (Jellyfin/Emby get this with the next SSE plugin release)
+- Upgrades show migration progress instead of looking dead, and a bad migration can't boot-loop the server
+- First sync is much faster
+- Fixed a silent gap in sharing detection on polled servers
+- Stale content and ROI stop double counting merged titles; duplicates stop counting mirrored files twice
+- OpenAPI specs publish as release assets, so the docs site always renders the spec for your version
+
+### Notes
+
+- Counts may shift after upgrade as versions and identities settle - that's the double counting going away
+- Overall trust scores move too: you now see a person's worst account, and violation totals actually count - both sat frozen before
 
