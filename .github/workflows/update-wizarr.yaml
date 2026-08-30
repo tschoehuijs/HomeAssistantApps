@@ -21,7 +21,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          RELEASE_JSON="$(curl -fsSL https://api.github.com/repos/wizarrrr/wizarr/releases/latest)"
+          RELEASE_JSON="$(curl -fsSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/wizarrrr/wizarr/releases/latest)"
           LATEST="$(echo "$RELEASE_JSON" | jq -r .tag_name | sed 's/^v//')"
           BODY="$(echo "$RELEASE_JSON" | jq -r .body)"
 
