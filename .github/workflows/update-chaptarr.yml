@@ -16,7 +16,7 @@ jobs:
       - name: Fetch latest Chaptarr version
         id: fetch_version
         run: |
-          LATEST=$(curl -s "https://hub.docker.com/v2/repositories/robertlordhood/chaptarr/tags/?page_size=50" \
+          LATEST=$(curl -s "https://hub.docker.com/v2/repositories/chaptarr/chaptarr/tags/?page_size=50" \
             | jq -r '.results[].name' \
             | grep -E '^[0-9]' \
             | sort -rV \
