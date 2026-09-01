@@ -1,6 +1,6 @@
-FROM robertlordhood/chaptarr:latest
+FROM chaptarr/chaptarr:latest
 
-# Run as Root
+# Run as Root for HAOS add-on compatibility
 ENV PUID=0
 ENV PGID=0
 
