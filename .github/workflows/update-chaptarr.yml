@@ -1,11 +1,14 @@
 name: Update Chaptarr Version
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
   update-version:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
 
@@ -13,24 +16,65 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Fetch latest Chaptarr version
-        id: fetch_version
+      - name: Fetch latest Chaptarr release
+        id: fetch_release
         run: |
-          LATEST=$(curl -s "https://hub.docker.com/v2/repositories/chaptarr/chaptarr/tags/?page_size=50" \
-            | jq -r '.results[].name' \
-            | grep -E '^[0-9]' \
-            | sort -rV \
-            | head -n 1)
+          # We use /releases and grab the first array item [0] to ensure we catch beta/pre-releases
+          RELEASE_JSON=$(curl -s https://api.github.com/repos/Chaptarr/chaptarr/releases | jq -c '.[0]')
+
+          LATEST=$(echo "$RELEASE_JSON" | jq -r .tag_name | sed 's/^v//')
+          BODY=$(echo "$RELEASE_JSON" | jq -r .body)
 
           echo "LATEST_VERSION=$LATEST" >> "$GITHUB_ENV"
+
+          {
+            echo "# Changelog"
+            echo
+            echo "## $LATEST"
+            echo
+            echo "$BODY"
+            echo
+          } > chaptarr/CHANGELOG.md
+
+          {
+            echo "Chaptarr upstream release: $LATEST"
+            echo
+            echo "$BODY"
+          } > chaptarr/RELEASE_NOTES.md
 
       - name: Update config.yaml
         run: |
           sed -i "s/^version: .*/version: \"${{ env.LATEST_VERSION }}\"/" chaptarr/config.yaml
 
       - name: Commit and push if changed
+        id: commit
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add chaptarr/config.yaml
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Bump Chaptarr to ${{ env.LATEST_VERSION }}" && git push)
+
+          git add chaptarr/config.yaml chaptarr/CHANGELOG.md
+
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes detected."
+          else
+            git commit -m "Bump Chaptarr to ${{ env.LATEST_VERSION }}"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="chaptarr-v${{ env.LATEST_VERSION }}"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists. Skipping."
+          else
+            gh release create "$TAG" \
+              --title "Chaptarr ${{ env.LATEST_VERSION }}" \
+              --notes-file chaptarr/RELEASE_NOTES.md \
+              --target main
+          fi
