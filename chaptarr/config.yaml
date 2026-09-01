@@ -1,8 +1,8 @@
 name: "Chaptarr"
-version: "0.9.680.0"
+version: "0.1.0"
 slug: "chaptarr"
-description: "The Modern Readarr Replacement (Alpha)"
-url: "https://github.com/robertlordhood/chaptarr"
+description: "The Modern Readarr Replacement (Open Beta)"
+url: "https://github.com/Chaptarr/chaptarr"
 arch:
   - aarch64
   - amd64
