@@ -2,7 +2,8 @@
 
 Welcome to my personal Home Assistant add-on repository! 
 
-**Disclaimer:** I am an amateur doing this purely for my own use and to learn. These add-ons are simple wrappers around the official Docker images to make them run inside Home Assistant OS. 
+### ⚠️ Warning: Use at Your Own Risk
+These add-ons are strictly for personal use and are provided "as-is" without any warranties. I am an amateur, and my configurations might contain errors. Installing custom add-ons can potentially crash your system, cause data loss, or expose security vulnerabilities. **You are using this repository entirely at your own risk.** 
 
 Because this is a personal project, please be aware that **issues or pull requests may go completely unresolved.** If something breaks, I might fix it for my own setup, but I cannot guarantee support for other users. 
 
@@ -21,9 +22,6 @@ This repository contains wrappers for open-source projects. Each wrapper is lice
 * **Chaptarr Add-on:** GPL-3.0 License
 
 Please see the `LICENSE` file within each specific add-on's folder for the full terms and original copyright notices.
-
-### ⚠️ Warning: Use at Your Own Risk
-These add-ons are strictly for personal use and are provided "as-is" without any warranties. I am an amateur, and my configurations might contain errors. Installing custom add-ons can potentially crash your system, cause data loss, or expose security vulnerabilities. **You are using this repository entirely at your own risk.**
 
 ### Installation
 To add this repository and install the apps in Home Assistant, follow these steps:
