@@ -1,5 +1,5 @@
 name: "Wizarr"
-version: "2026.7.1"
+version: "2026.9.0"
 slug: "wizarr_custom"
 description: "Wizarr instance running as a Home Assistant add-on"
 url: "https://github.com/wizarrrr/wizarr"
