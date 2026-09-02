@@ -33,4 +33,4 @@ To add this repository and install the apps in Home Assistant, follow these step
 5. Close the dialog. Click the three dots in the top right again and select **Reload**.
 6. Scroll down to the bottom of the store to find this repository and its add-ons.
 7. Click on the app you want (Wizarr, Tracearr, or Chaptarr) and click **Install**. 
-8. Once installed, review the **Configuration** tab before clicking **Start**.
+8. Once installed, review the **Configuration** tab before clicking **Start**. In my experience the apps work fine as-is.
