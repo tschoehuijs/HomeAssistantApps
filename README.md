@@ -3,7 +3,7 @@
 Welcome to my personal Home Assistant add-on repository! 
 
 ### ⚠️ Warning: Use at Your Own Risk
-These add-ons are strictly for personal use and are provided "as-is" without any warranties. I am an amateur, and my configurations might contain errors. Installing custom add-ons can potentially crash your system, cause data loss, or expose security vulnerabilities. **You are using this repository entirely at your own risk.** 
+These add-ons are strictly for personal use and are provided "as-is" without any warranties. I am an amateur and made most of this using AI - my configurations or code may contain errors. Installing custom add-ons can potentially crash your system, cause data loss, or expose security vulnerabilities. **You are using this repository entirely at your own risk.** 
 
 Because this is a personal project, please be aware that **issues or pull requests may go completely unresolved.** If something breaks, I might fix it for my own setup, but I cannot guarantee support for other users. 
 
