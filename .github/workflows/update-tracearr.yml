@@ -19,13 +19,22 @@ jobs:
       - name: Fetch latest Tracearr release
         id: fetch_release
         run: |
-          RELEASE_JSON=$(curl -s https://api.github.com/repos/connorgallopo/tracearr/releases/latest)
-
+          set -eo pipefail
+          
+          # Added -f to curl so it fails immediately if rate-limited (HTTP 403)
+          RELEASE_JSON=$(curl -sSf https://api.github.com/repos/connorgallopo/tracearr/releases/latest)
+          
           LATEST=$(echo "$RELEASE_JSON" | jq -r .tag_name | sed 's/^v//')
           BODY=$(echo "$RELEASE_JSON" | jq -r .body)
-
+          
+          # Failsafe: stop if the version evaluates to empty or null
+          if [ -z "$LATEST" ] || [ "$LATEST" == "null" ]; then
+            echo "Failed to get a valid version tag. Exiting."
+            exit 1
+          fi
+          
           echo "LATEST_VERSION=$LATEST" >> "$GITHUB_ENV"
-
+          
           {
             echo "# Changelog"
             echo
@@ -34,7 +43,7 @@ jobs:
             echo "$BODY"
             echo
           } > tracearr/CHANGELOG.md
-
+          
           {
             echo "Tracearr upstream release: $LATEST"
             echo
