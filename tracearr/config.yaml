@@ -19,3 +19,4 @@ schema:
 startup: application
 icon: "icon.png"
 logo: "logo.png"
+webui: "http://[HOST]:[PORT:3000]/"
