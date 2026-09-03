@@ -1,8 +1,8 @@
 name: "Chaptarr"
 version: "0.9.936"
 slug: "chaptarr"
-description: "The Modern Readarr Replacement (Open Beta)"
-url: "https://github.com/Chaptarr/chaptarr"
+description: "Home assistant wrapper of Chaptarr, the modern readarr replacement."
+url: "https://github.com/tschoehuijs/HomeAssistantApps"
 arch:
   - aarch64
   - amd64
@@ -12,8 +12,7 @@ panel_icon: mdi:book-open-variant
 ports:
   8789/tcp: 8789
 map:
+  - data:rw
   - media:rw
-  - config:rw
-  - share:rw
 options: {}
 schema: {}
