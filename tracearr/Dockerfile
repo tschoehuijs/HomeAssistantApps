@@ -4,7 +4,7 @@ FROM scratch
 
 COPY --from=upstream / /
 
-COPY ha-entrypoint.sh /ha-entrypoint.sh
+COPY --chmod=0755 ha-entrypoint.sh /ha-entrypoint.sh
 
 WORKDIR /app
 
