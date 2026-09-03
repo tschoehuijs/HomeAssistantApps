@@ -25,6 +25,12 @@ jobs:
           LATEST="$(echo "$RELEASE_JSON" | jq -r .tag_name | sed 's/^v//')"
           BODY="$(echo "$RELEASE_JSON" | jq -r .body)"
 
+          # Failsafe check added here:
+          if [ -z "$LATEST" ] || [ "$LATEST" == "null" ]; then
+            echo "Error: Could not retrieve a valid version tag."
+            exit 1
+          fi
+
           echo "LATEST_VERSION=$LATEST" >> "$GITHUB_ENV"
 
           {
