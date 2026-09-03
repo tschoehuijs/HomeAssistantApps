@@ -18,3 +18,4 @@ options: {}
 schema: {}
 icon: "icon.png"
 logo: "logo.png"
+webui: "http://[HOST]:[PORT:5690]/"
