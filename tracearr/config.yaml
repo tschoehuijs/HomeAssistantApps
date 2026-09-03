@@ -8,15 +8,16 @@ arch:
   - amd64
 ports:
   3000/tcp: 3000
-map:
-  - data:rw
+map:  - data:rw
+  - media:rw
+  - share:rw
 options:
   PG_MAX_MEMORY: "512MB"
   TZ: "Europe/Amsterdam"
 schema:
   PG_MAX_MEMORY: str
   TZ: str
-startup: application
+options: {}
 icon: "icon.png"
 logo: "logo.png"
 webui: "http://[HOST]:[PORT:3000]/"
