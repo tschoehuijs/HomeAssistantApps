@@ -1,6 +1,11 @@
 FROM ghcr.io/connorgallopo/tracearr:supervised AS upstream
+
 FROM scratch
+
 COPY --from=upstream / /
+
+COPY ha-entrypoint.sh /ha-entrypoint.sh
+
 WORKDIR /app
 
 ENV NODE_ENV=production \
@@ -12,5 +17,5 @@ ENV NODE_ENV=production \
 
 EXPOSE 3000
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/ha-entrypoint.sh"]
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
