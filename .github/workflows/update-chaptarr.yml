@@ -19,11 +19,19 @@ jobs:
       - name: Fetch latest Chaptarr release
         id: fetch_release
         run: |
-          # We use /releases and grab the first array item [0] to ensure we catch beta/pre-releases
-          RELEASE_JSON=$(curl -s https://api.github.com/repos/Chaptarr/chaptarr/releases | jq -c '.[0]')
+          set -eo pipefail
+          
+          # Added -f to curl so it fails immediately if rate-limited
+          RELEASE_JSON=$(curl -sSf https://api.github.com/repos/Chaptarr/chaptarr/releases | jq -c '.[0]')
 
           LATEST=$(echo "$RELEASE_JSON" | jq -r .tag_name | sed 's/^v//')
           BODY=$(echo "$RELEASE_JSON" | jq -r .body)
+
+          # Failsafe: stop if the version evaluates to empty or null
+          if [ -z "$LATEST" ] || [ "$LATEST" == "null" ]; then
+            echo "Failed to get a valid version tag. Exiting."
+            exit 1
+          fi
 
           echo "LATEST_VERSION=$LATEST" >> "$GITHUB_ENV"
 
