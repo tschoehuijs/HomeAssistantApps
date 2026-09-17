@@ -1,3 +1,4 @@
+[![Home Assistant](https://img.shields.io/badge/Home_Assistant-2026.6-blue.svg?logo=home-assistant)](https://www.home-assistant.io/)
 # My Home Assistant Add-ons
 
 Welcome to my personal Home Assistant add-on repository! 
@@ -24,7 +25,10 @@ This repository contains wrappers for open-source projects. Each wrapper is lice
 Please see the `LICENSE` file within each specific add-on's folder for the full terms and original copyright notices.
 
 ### Installation
-To add this repository and install the apps in Home Assistant, follow these steps:
+
+[![Add repository to Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Ftschoehuijs%2FHomeAssistantApps)
+
+To add this repository manually and install the apps in Home Assistant, follow these steps:
 
 1. Open Home Assistant and navigate to **Settings** > **Add-ons**.
 2. Click the **ADD-ON STORE** button in the bottom right corner.
