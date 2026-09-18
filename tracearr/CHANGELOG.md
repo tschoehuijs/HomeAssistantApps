@@ -1,68 +1,44 @@
 # Changelog
 
-## 2.3.0
+## 2.4.0
 
-# Tracearr v2.3.0 - Seerr requests, newsletters, and email
+# Tracearr v2.4.0 - Housekeeping and mobile
 
-### Requests
-Link Seerr, Overseerr or Jellyseerr to a server and every title shows who requested it, when it landed, and whether the requester watched it. Media → Requests counts what landed, what got watched and what nobody has played, with its size on disk. Tracearr only reads from Seerr, every 15 minutes with a full pass nightly. [Docs](https://docs.tracearr.com/configuration/requests)
+### Imported history
+Link Imported Plex History links Tautulli plays that never matched a library item, so their plays and watched state count. Remove Imported Duplicates deletes an imported play only when a tracked play already records the same thing. Both are under Settings → Data → Jobs. Jellystat's JSONL backups import, and every importer skips plays that started after the server was added to Tracearr. [Docs](https://docs.tracearr.com/getting-started/import)
 
-### Newsletters
-A newsletter mails a server's members what was added over a window, on a schedule, with an optional most watched section. Each one carries an unsubscribe link and a view in browser link, and History lists every send per recipient with retry for the ones that failed. Links to Jellyfin and Emby items need the server's Public address. [Docs](https://docs.tracearr.com/configuration/email/newsletters)
+### Resolution
+Resolution comes from pixel dimensions on every server, and 8K, 1440p and 480p have their own buckets in library quality charts, catalog filters and automation conditions. Library counts shift after upgrading: 1440p and 8K titles leave 4K, and 480p titles leave SD. Plex libraries rescan in full once to pick this up.
 
-### Email
-One SMTP destination sends automation alerts and newsletters, with presets for seven providers. Logo, accent color, footer and postal address, plus the suppression list, are under Settings → Notifications → Email. [Docs](https://docs.tracearr.com/configuration/email)
+### Mobile
+The iOS home screen widget refreshes when a stream starts or stops, at most every 20 minutes. Pairing shows Tracearr as the instance name instead of the first media server's name. [Docs](https://docs.tracearr.com/configuration/mobile)
 
 ### New
-- Seerr, Overseerr or Jellyseerr request history on media and user detail, read-only ([docs](https://docs.tracearr.com/configuration/requests))
-- A Requests page under Media tracks what landed and who watched what they asked for ([docs](https://docs.tracearr.com/configuration/requests#the-requests-page))
-- Newsletters mail members what was added and what got watched most ([docs](https://docs.tracearr.com/configuration/email/newsletters))
-- A newsletter across several servers only lists the ones each member has an account on ([docs](https://docs.tracearr.com/configuration/email/recipients#one-email-per-set-of-servers))
-- Newsletters take a sender name, a rich-text intro and outro, and an opt-in Tracearr footer link
-- A digest trims itself under Gmail's 102 KB clip, and each trimmed section says how many it left out
-- Newsletter posters can be attached, hosted from your external URL, or left out ([docs](https://docs.tracearr.com/configuration/email/newsletters#poster-images))
-- A contact email on the user page, edited next to the name, is where that person's newsletters go ([docs](https://docs.tracearr.com/configuration/email/recipients#setting-a-contact-email))
-- SMTP email destination with presets for Postmark, Resend, SES, Mailgun, SendGrid, Brevo and Gmail ([docs](https://docs.tracearr.com/configuration/email))
-- A what's new dialog opens once after an update, and clicking the sidebar version reopens it
-- The update dialog lists anything to do before updating, like backing up or updating the SSE plugin
-- Manage recipients sheet to exclude members from a newsletter or add addresses ([docs](https://docs.tracearr.com/configuration/email/recipients#exclude-and-include))
-- Unsubscribe and view-in-browser links in every newsletter, and a History tab with retry ([docs](https://docs.tracearr.com/configuration/email/recipients#unsubscribing))
-- Email branding and a suppression list under Settings → Notifications → Email ([docs](https://docs.tracearr.com/configuration/email#branding))
-- Verify certificate switch for self-signed mail servers like Protonmail Bridge
-- Jellyfin and Emby API keys can be changed in Edit Server ([docs](https://docs.tracearr.com/configuration/servers#changing-the-url-or-api-key))
-- New trigger "a stream is first seen" fires before the thirty-second confirmation ([docs](https://docs.tracearr.com/configuration/automations#sessions))
-- Triggers for when a newsletter is sent or a send fails, plus a Newsletter failed template ([docs](https://docs.tracearr.com/configuration/automations#newsletters))
-- Public address on Jellyfin and Emby servers so newsletter links open for members ([docs](https://docs.tracearr.com/getting-started/first-server#public-address))
+- Link Imported Plex History links unmatched Tautulli imports so their plays and watched state count
+- Run Remove Imported Duplicates in Settings → Data → Jobs if an import doubled plays
 
 ### Improved
-- Settings is five groups in a left column, and old paths redirect
-- Merge suggestions say why two users matched and can be dismissed
-- A merge carries over contact email, newsletter exclusions and Seerr requests
-- Jellyfin and Emby usernames that are email addresses count as the account email
+- Resolution comes from pixel dimensions, and 8K, 1440p and 480p have their own buckets
+- Jellystat imports link episode plays to the episode; plays Jellystat may have moved to a different title stay unlinked
+- Jellystat imports take the runtime from the media server, so plays past the watched threshold count as watched
+- Jellystat imports no longer store a playback position Jellystat never measured
+- Jellystat import says when plugin plays need the Playback Reporting Plugin Data table to link
+- The iOS home screen widget is refreshed when a stream starts or stops, at most every 20 minutes
 
 ### Fixes
-- Jellyfin 12 movies in a collection no longer drop out of the library
-- A failed Plex shared-users fetch no longer marks every user as removed
-- A scan checks each missing item by id with the server before removing it
-- Plex titles keep all their genres after the next full sync
-- Jellyfin 12 music artists no longer land under video libraries and stall snapshots
-- Most popular ranks read 1 to 20 again
-- Dead Weight no longer skips titles someone opened but never watched
-- A rejected Jellyfin or Emby API key shows an error instead of the login page
-- Series browse quality, HDR and size filters read the episodes
-- The update check reads Jellyfin's two-part v12.0 version
-- The server version line no longer offers an older release as an update
-- Share codes work on beta builds
-- Emby admin check tells a down server, a bad key and a non-admin account apart
-- Tautulli import skips a page that won't fetch instead of failing the run
-- Library sync survives a bad library name
-- The Browse grid fills the window and refits when a banner comes or goes
-
-### Security
-- Connecting a Jellyfin or Emby server no longer hands a login token to the browser
+- Tautulli, Jellystat and Playback Reporting imports skip plays that started at or after the server was added
+- Jellystat and Playback Reporting imports skip plays whose recorded play time runs past the media runtime
+- Jellystat's newer JSONL backups can be imported ([docs](https://docs.tracearr.com/getting-started/import))
+- Large Jellystat backups use far less memory to import and no longer sit in Redis while they wait
+- The Map page zooms to where plays are instead of stretching to one far-off play, and fills the window on desktop
+- Plays that were linked to a whole show, season, artist or album instead of the item played are unlinked
+- Acknowledging violations in bulk leaves ones already acknowledged alone and counts only the rest
+- Pairing the mobile app shows Tracearr as the instance name instead of the first media server's name
+- Templates that use a newsletter or first-seen trigger, or 1440p/8K values, state the server version they need
 
 ### Notes
-- The first library sync after updating is a full scan on every server
-- An auth proxy must let `/api/v1/email/unsubscribe/*`, `/api/v1/newsletters/view/*` and `/api/v1/images/proxy` through ([docs](https://docs.tracearr.com/configuration/email/recipients#behind-a-reverse-proxy))
-- Helm takes the container port from `tracearr.env.PORT`; compose examples treat PORT as the host port
+- After upgrading, stats rebuild in the background and show only the last 7 days until that finishes
+- The first library sync after upgrading rescans every Plex library in full once
+- Library resolution counts shift after upgrading; quality history keeps the old buckets for earlier days
+- Automation conditions with resolution equals 4K no longer match 8K or 1440p; at least conditions are unaffected
 
