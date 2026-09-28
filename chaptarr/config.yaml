@@ -1,5 +1,5 @@
 name: "Chaptarr"
-version: "0.9.958"
+version: "0.9.965"
 slug: "chaptarr"
 description: "Home assistant wrapper of Chaptarr, the modern readarr replacement."
 url: "https://github.com/tschoehuijs/HomeAssistantApps"
