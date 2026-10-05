@@ -1,20 +1,23 @@
 # Changelog
 
-## 2.6.1
+## 2.6.2
 
-# Tracearr v2.6.1
+# Tracearr v2.6.2
 
 ### New
-- Media → Browse filters by video codec, audio codec and audio channels (#1240)
-- Clicking a resolution, codec or audio channel bar on the Quality page opens Browse filtered to it (#659)
+- Mobile auth replies carry a code: device removed, token expired or unknown, backup restored, or app too old
 
 ### Improved
-- The Other bar on the Quality page codec charts lists the codecs it groups (#408)
+- Phones paired before 1.5.0 move onto the current session type the next time they refresh, without pairing again
+- A removed phone is told it was removed for 30 days after the removal, not just until its device entry is gone
+- Encrypted push notifications name the device secret they were sealed with, so the app can spot a stale one
 
 ### Fixes
-- Proxmox installs and upgrades get the stream map again instead of failing on a deleted Protomaps build
-- The public API's watched-media keeps season and episode numbers for watched episodes deleted from the server (#1283)
-- Now playing labels trailers, so a trailer Plex names after its movie no longer looks like the movie
+- A Redis or Postgres outage answers paired phones with 503 instead of a sign-in error
+- The mobile pairing dialog says a token lasts 15 minutes, which is how long it lasts
+
+### Security
+- A refresh token that a pre-1.5.0 pairing already rotated away can no longer be replayed later
 
 Other release notes: https://github.com/connorgallopo/Tracearr/releases/tag/v2.6.0
 
