@@ -14,6 +14,8 @@ ENV NODE_ENV=production \
     DATABASE_URL=postgresql://tracearr:tracearr@127.0.0.1:5432/tracearr \
     REDIS_URL=redis://127.0.0.1:6379
 
+ENV IMAGE_CACHE_DIR=/data/tracearr/image-cache
+
 EXPOSE 3000
 
 ENTRYPOINT ["/ha-entrypoint.sh"]
