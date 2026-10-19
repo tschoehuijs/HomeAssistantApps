@@ -22,9 +22,7 @@ jobs:
           set -eo pipefail
           
           # Added -f to curl so it fails immediately if rate-limited
-          RELEASE_JSON=$(curl -sSf \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/Chaptarr/chaptarr/releases | jq
+          RELEASE_JSON=$(curl -sSf -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/Chaptarr/chaptarr/releases | jq -c '.[0]')
 
           LATEST=$(echo "$RELEASE_JSON" | jq -r .tag_name | sed 's/^v//')
           BODY=$(echo "$RELEASE_JSON" | jq -r .body)
