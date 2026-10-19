@@ -22,7 +22,7 @@ jobs:
           set -eo pipefail
           
           # Added -f to curl so it fails immediately if rate-limited (HTTP 403)
-          RELEASE_JSON=$(curl -sSf https://api.github.com/repos/connorgallopo/tracearr/releases/latest)
+          RELEASE_JSON=$(curl -sSf -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/connorgallopo/tracearr/releases/latest)
           
           LATEST=$(echo "$RELEASE_JSON" | jq -r .tag_name | sed 's/^v//')
           BODY=$(echo "$RELEASE_JSON" | jq -r .body)
