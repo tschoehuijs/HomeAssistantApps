@@ -1,6 +1,6 @@
 name: "Tracearr"
 description: "Home Assistant wrapper for Tracearr, real-time monitoring for Plex, Jellyfin, and Emby."
-version: "3.0.0"
+version: "3.1.1"
 slug: "tracearr"
 url: "https://github.com/tschoehuijs/HomeAssistantApps"
 arch:
