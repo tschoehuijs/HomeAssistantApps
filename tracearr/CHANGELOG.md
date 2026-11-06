@@ -1,19 +1,28 @@
 # Changelog
 
-## 3.1.3
+## 3.1.4
 
-# Tracearr v3.1.3
+# Tracearr v3.1.4
+
+### New
+- Automations can fire when a stream passes the watched threshold set in Settings
+- Browse filters by added date; clicking Movies or Episodes on the library growth chart opens it for the picked range
 
 ### Improved
-- Plex setup now accepts your server's own plex.direct address and only refuses Plex relay addresses
-- Mobile pushes replace instead of stacking: a stream's stop replaces its start, a server back up replaces its outage
-- Improved Jellyfin and Emby stream reporting
+- Each episode in a show's season strip names itself on hover and opens its own page
+- The dashboard shows today's watch time in hours and minutes
+- Hovering the time left on a Now Playing card shows when the stream ends
+- Binge highlights rank shows by episodes watched back to back per person; Top shows lists episodes per viewer
+- The mobile app's notification switches set what the server sends to Mobile push, so they apply to every paired device
 
 ### Fixes
-- Newsletter posters and logo now load in the browser view and preview when Tracearr runs under BASE_PATH (#1391)
-- The 24-hour clock now shows a leading zero on hours before 10, such as 08:05 (#1392)
-- An iPhone that was offline now gets the alert it missed instead of a stale stream notification
-- Android phones in standby now get push notifications right away instead of when the screen next wakes
+- A few seconds of a title no longer counts as a viewer, and a play the server marked watched always does
+- The Overview shelves now cover exactly the days picked; a 30-day range no longer includes a 31st day
+- A user that fails to save during a server sync shows up in the sync's errors instead of failing the sync
+- The import file drop zone opens the file picker from the keyboard
+
+### Notes
+- Tracearr now runs on Node.js 26; servers behind an HTTPS reverse proxy are reached over HTTP/2 when the proxy offers it
 
 Other release notes: https://github.com/connorgallopo/Tracearr/releases/tag/v3.1.0
 
