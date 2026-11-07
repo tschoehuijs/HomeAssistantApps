@@ -15,7 +15,7 @@ All credit for the actual software goes to their respective creators. You can fi
 * [**Wizarr**](https://github.com/wizarrrrr/wizarr) - Media Management Software (MIT License)
 * [**Tracearr**](https://github.com/connorgallopo/Tracearr) - Monitoring platform for Plex, Jellyfin, and Emby (AGPL-3.0 License)
 * [**Chaptarr**](https://github.com/Chaptarr/chaptarr) - Audiobook and eBook collection manager (GPL-3.0 License)
-* [**Vinted MCP Server**](https://github.com/andrijdavid/vinted-mcp) - MCP tools for Vinted marketplace search, listings, sellers, and price analysis. This is an unofficial integration.
+* [**Vinted MCP Server**](https://github.com/andrijdavid/vinted-mcp) - MCP tools for Vinted marketplace search, listings, sellers, and price analysis.
 
 Each app has its own `DOCS.md` with configuration, usage, updates, and troubleshooting guidance. In Home Assistant, open the app's **Documentation** tab.
 
