@@ -1,8 +1,8 @@
-name: Vinted MCP Server
+name: "Vinted MCP Server"
+description: "Home Assistant wrapper for Vinted MCP, providing marketplace search and analysis tools for AI assistants."
 version: "0.1.2"
-slug: vinted_mcp
-description: Vinted marketplace search and analysis via MCP
-url: https://github.com/andrijdavid/vinted-mcp
+slug: "vinted_mcp"
+url: "https://github.com/tschoehuijs/HomeAssistantApps"
 arch:
   - aarch64
 startup: application
@@ -11,7 +11,7 @@ init: false
 ports:
   3001/tcp: 3002
 ports_description:
-  3001/tcp: MCP Streamable HTTP endpoint
+  3001/tcp: "MCP Streamable HTTP endpoint"
 options:
   auth_mode: http
   auth_cookies: ""
@@ -20,3 +20,6 @@ schema:
   auth_mode: list(http|env)
   auth_cookies: password?
   auth_csrf_token: password?
+icon: "icon.png"
+logo: "logo.png"
+timezone: true
