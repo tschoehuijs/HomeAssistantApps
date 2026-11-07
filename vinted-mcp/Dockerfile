@@ -3,6 +3,7 @@ FROM ghcr.io/home-assistant/base:latest
 ARG VINTED_COMMIT=992d476
 
 RUN apk add --no-cache nodejs npm jq git \
+    && npm install --global typescript \
     && git clone https://github.com/andrijdavid/vinted-mcp.git /tmp/vinted-mcp \
     && cd /tmp/vinted-mcp \
     && git checkout "${VINTED_COMMIT}" \
