@@ -8,7 +8,8 @@ RUN apk add --no-cache nodejs npm jq git \
     && cd /opt/vinted-mcp \
     && git checkout "${VINTED_COMMIT}" \
     && npm install \
-    && npm run build
+    && npm run build \
+    && npm run bundle
 
 COPY --chmod=0755 run.sh /run.sh
 
