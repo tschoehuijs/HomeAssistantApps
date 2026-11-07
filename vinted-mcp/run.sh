@@ -30,7 +30,9 @@ const oldSetup = `  const streamableServer = createServer();
   });
   await streamableServer.connect(transport);`;
 
-const newSetup = ``;
+const newSetup = `  const streamableServer = {
+    close: async () => {}
+  };`;
 
 const oldHandler = `    if (url.pathname === path) {
       transport.handleRequest(req, res).catch((error) => {
