@@ -1,9 +1,16 @@
 FROM ghcr.io/home-assistant/base:latest
 
-ARG VINTED_COMMIT=992d476cd846d0762e16a3c3913912e1a12d9cdd
+ARG VINTED_COMMIT=992d476
 
 RUN apk add --no-cache nodejs npm jq git \
-    && npm install --global --omit=dev "git+https://github.com/andrijdavid/vinted-mcp.git#${VINTED_COMMIT}"
+    && git clone https://github.com/andrijdavid/vinted-mcp.git /tmp/vinted-mcp \
+    && cd /tmp/vinted-mcp \
+    && git checkout "${VINTED_COMMIT}" \
+    && npm install \
+    && npm run build \
+    && npm install --global . \
+    && cd / \
+    && rm -rf /tmp/vinted-mcp
 
 COPY --chmod=0755 run.sh /run.sh
 
