@@ -9,7 +9,10 @@ RUN apk add --no-cache nodejs npm jq git \
     && git checkout "${VINTED_COMMIT}" \
     && npm install \
     && npm run build \
-    && npm run bundle
+    && npm run bundle \
+    && test -f dist/bundle.js \
+    && sed -i '/transport.handleRequest(req, res).catch((error) => {/a\        console.error("[MCP REQUEST ERROR]", error);' dist/bundle.js \
+    && sed -i '/await streamableServer.connect(transport);/a\  transport.onerror = (error) => console.error("[MCP TRANSPORT ERROR]", error);' dist/bundle.js
 
 COPY --chmod=0755 run.sh /run.sh
 
