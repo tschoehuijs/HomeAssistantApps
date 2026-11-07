@@ -1,11 +1,9 @@
-ARG BUILD_FROM=node:22-alpine
-FROM ${BUILD_FROM}
+FROM ghcr.io/home-assistant/base:latest
 
-RUN apk add --no-cache jq \
-    && npm install --global --omit=dev @andrijdavid/vinted-mcp
+ARG VINTED_VERSION=0.1.2
+RUN apk add --no-cache nodejs npm jq \
+    && npm install --global --omit=dev "@andrijdavid/vinted-mcp@${VINTED_VERSION}"
 
-COPY run.sh /run.sh
-RUN chmod +x /run.sh
-
+COPY --chmod=0755 run.sh /run.sh
 EXPOSE 3001
 CMD ["/run.sh"]

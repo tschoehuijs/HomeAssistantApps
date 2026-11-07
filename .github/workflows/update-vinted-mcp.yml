@@ -1,0 +1,71 @@
+name: Update Vinted MCP Version
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Fetch latest npm version
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE_JSON="$(curl -fsSL --retry 3 'https://registry.npmjs.org/@andrijdavid%2fvinted-mcp/latest')"
+          LATEST="$(jq -r '.version // empty' <<< "$PACKAGE_JSON")"
+          if [[ ! "$LATEST" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid npm version: $LATEST" >&2
+            exit 1
+          fi
+          echo "LATEST_VERSION=$LATEST" >> "$GITHUB_ENV"
+
+      - name: Update app version and build argument
+        shell: bash
+        run: |
+          set -euo pipefail
+          sed -i "s/^version: .*/version: \"${LATEST_VERSION}\"/" vinted-mcp/config.yaml
+          sed -i "s/^  VINTED_VERSION: .*/  VINTED_VERSION: \"${LATEST_VERSION}\"/" vinted-mcp/build.yaml
+          {
+            echo '# Changelog'
+            echo
+            echo "## ${LATEST_VERSION}"
+            echo
+            echo "Upstream npm release: @andrijdavid/vinted-mcp@${LATEST_VERSION}"
+            echo
+            echo 'See upstream: https://github.com/andrijdavid/vinted-mcp'
+          } > vinted-mcp/CHANGELOG.md
+
+      - name: Commit and push if changed
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add vinted-mcp/config.yaml vinted-mcp/build.yaml vinted-mcp/CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Bump Vinted MCP to ${LATEST_VERSION}"
+            git push
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release
+        if: steps.commit.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="vinted-mcp-v${LATEST_VERSION}"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "Vinted MCP ${LATEST_VERSION}" --notes-file vinted-mcp/CHANGELOG.md --target main
+          fi
