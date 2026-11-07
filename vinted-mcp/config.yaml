@@ -1,0 +1,22 @@
+name: Vinted MCP Server
+version: 1.0.0
+slug: vinted_mcp
+description: Search and analyze Vinted listings through an MCP server
+url: https://github.com/andrijdavid/vinted-mcp
+arch:
+  - aarch64
+startup: application
+boot: auto
+init: false
+ports:
+  3001/tcp: 3002
+ports_description:
+  3001/tcp: MCP HTTP endpoint
+options:
+  auth_mode: http
+  auth_cookies: ""
+  auth_csrf_token: ""
+schema:
+  auth_mode: list(http|env)
+  auth_cookies: password?
+  auth_csrf_token: password?
