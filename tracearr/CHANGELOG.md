@@ -1,12 +1,11 @@
 # Changelog
 
-## 3.1.5
+## 3.1.6
 
-# Tracearr v3.1.5
+# Tracearr v3.1.6
 
 ### Fixes
-- A play resumed later shows in History at the time it resumed, with its segment count beside the time (#1419)
-- Importing a shared automation scoped to one account lists your accounts on every server to pick from (#1418)
+- Episodes show their show's poster in notifications and on their own page, not a cropped still from the episode (#1421)
 
 Other release notes: https://github.com/connorgallopo/Tracearr/releases/tag/v3.1.0
 
