@@ -1,0 +1,24 @@
+name: "MCP Auth Gateway"
+description: "OAuth authentication gateway for an existing HTTP MCP server."
+version: "0.1.0"
+slug: "mcp_auth_gateway"
+url: "https://github.com/sigbit/mcp-auth-proxy"
+arch:
+  - aarch64
+startup: application
+boot: manual
+init: true
+stage: experimental
+ports:
+  8080/tcp: 9877
+ports_description:
+  8080/tcp: "OAuth gateway HTTP endpoint; place behind HTTPS reverse proxy"
+watchdog: "http://[PORT:8080]/healthz"
+options:
+  external_url: "https://mcp.tschoehuijs.duckdns.org"
+  backend_url: "http://192.168.1.8:9876"
+  password: ""
+schema:
+  external_url: url
+  backend_url: url
+  password: password
