@@ -15,8 +15,8 @@ ports_description:
   8080/tcp: "OAuth gateway HTTP endpoint; place behind HTTPS reverse proxy"
 watchdog: "http://[HOST]:[PORT:8080]/healthz"
 options:
-  external_url: "https://mcp.tschoehuijs.duckdns.org"
-  backend_url: "http://192.168.1.8:9876"
+  external_url: ""
+  backend_url: "http://[HOST]:9876"
   password: ""
 schema:
   external_url: url

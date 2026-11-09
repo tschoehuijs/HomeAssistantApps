@@ -1,169 +1,134 @@
 # MCP Auth Gateway documentation
 
-This app adds an OAuth authentication layer in front of an existing HTTP MCP server. It does not install the backend server or provide marketplace tools itself.
+This Home Assistant OS app adds OAuth authentication in front of an **existing HTTP MCP backend**. It is independent of the MCP tools and services behind that backend.
 
-All credit for the authentication software goes to [Sigbit MCP Auth Proxy](https://github.com/sigbit/mcp-auth-proxy). This experimental wrapper is provided for personal use, as-is, without guaranteed support.
+## Architecture
 
-## Requirements
+```text
+OAuth-capable MCP client
+    | HTTPS
+Nginx Proxy Manager / HTTPS reverse proxy
+    | HTTP
+MCP Auth Gateway (HAOS host port 9877)
+    | HTTP
+Existing MCP backend (any reachable HTTP origin)
+    | optional stdio bridge
+MCP tools
+```
 
-- Home Assistant OS on aarch64 / ARM64 hardware.
-- An existing HTTP MCP backend reachable from the app.
-- A public hostname and HTTPS reverse proxy.
-- An MCP client that supports the gateway's OAuth flow.
+### Optional companion: MCP Proxy (port 9876)
 
-Gemini compatibility has not been verified for this wrapper. Test login and a real tool call before relying on it.
+[MCP Proxy by slettmayer](https://github.com/slettmayer/home-assistant-apps/tree/main/mcp-proxy) is a separate Home Assistant app that runs stdio MCP servers and exposes their tools over HTTP. It typically publishes port **9876**, making it a useful backend for this gateway on **9877**. The gateway does not install or manage MCP Proxy. Other HTTP MCP backends work too.
 
-## Installation in Home Assistant
+### Example only: Vinted MCP
 
-1. Add [the app repository](https://github.com/tschoehuijs/HomeAssistantApps) through **Settings > Apps > App store > three-dot menu > Repositories**.
-2. Refresh the store or select **Check for updates**.
-3. Open **MCP Auth Gateway** and select **Install**.
-4. Open **Configuration** before starting the app.
+For a marketplace example, the companion MCP Proxy can launch [andrijdavid/vinted-mcp](https://github.com/andrijdavid/vinted-mcp) in stdio mode. The working configuration used upstream commit [`992d476`](https://github.com/andrijdavid/vinted-mcp/commit/992d476), which contains the Vinted search/item API route fix. When configured with the name `vinted`, MCP Proxy exposes it at `/servers/vinted/mcp`.
 
-Older Home Assistant versions label Apps and App store as Add-ons and Add-on store. If the repository is already added, do not add it again.
+**This example is not a requirement.** Substitute your own MCP backend, server name, and endpoint path throughout these instructions.
+
+## Install through Home Assistant
+
+1. Confirm that your HTTP MCP backend already works locally. If using MCP Proxy, install it from [slettmayer/home-assistant-apps](https://github.com/slettmayer/home-assistant-apps) and follow its `servers.json` instructions.
+2. In Home Assistant, open **Settings > Apps > App store > ⋮ > Repositories**.
+3. Add [HomeAssistantApps](https://github.com/tschoehuijs/HomeAssistantApps), unless already installed.
+4. Refresh the store, open **MCP Auth Gateway**, and select **Install**.
+5. Set the three configuration options below, save, and start the app.
+6. Validate locally before changing Nginx or reconnecting a public client.
 
 ## Configuration
 
-Example values below are placeholders. Replace them with your own addresses and password.
+Example values only; do not commit your actual hostname, LAN address, or password to a public repository:
 
 ```yaml
 external_url: "https://mcp.example.com"
 backend_url: "http://192.168.1.100:9876"
-password: "REPLACE_WITH_A_UNIQUE_RANDOM_PASSWORD"
+password: "REPLACE_WITH_UNIQUE_RANDOM_PASSWORD_AT_LEAST_20_CHARS"
 ```
 
-### external_url
+- **`external_url`**: public HTTPS origin of the gateway, **without** `/mcp` or another endpoint path. OAuth discovery and login must use the same origin.
+- **`backend_url`**: internal HTTP(S) origin of the existing MCP backend, **without** the MCP path. For the optional MCP Proxy, use your HAOS address and its published port `9876`. Other backends can use other ports.
+- **`password`**: unique gateway login password, at least 20 characters. It is **not** a Vinted password, Nginx Basic Auth password, or OAuth Client ID/secret.
 
-The public HTTPS origin used by your MCP client.
+The gateway's published host port defaults to **9877** (container port 8080). Never set `backend_url` to the gateway's own public URL or port 9877: that would create a forwarding loop.
 
-- Include `https://`.
-- Do not include the MCP endpoint path, credentials, query parameters, or fragments.
-- Route the entire hostname to this gateway, including OAuth discovery and login paths.
+## Local validation
 
-### backend_url
+Replace `<HAOS-IP>` with your device's IP address.
 
-The internal origin of the existing MCP server.
-
-- Include `http://` or `https://` and the backend port if required.
-- Do not include the MCP endpoint path.
-- Use an address reachable from inside the app. `localhost` refers to this gateway container, not the HAOS host or another app.
-- Do not point this option at the gateway itself or at its public hostname; that would create a proxy loop.
-
-The gateway's HTTP proxy mode preserves the backend request path. For example, a backend endpoint at `/servers/vinted/mcp` is accessed through the same path on the public hostname.
-
-### password
-
-Set a unique, randomly generated password of at least 20 characters in the app's Configuration tab. Do not commit it to GitHub or paste it into logs or support requests.
-
-The password field masks the UI value; it does not encrypt the saved options at rest. This is the gateway login password, not a Vinted password, OAuth client secret, or Nginx HTTP Basic password.
-
-## Start and test locally
-
-1. Save the configuration.
-2. Start the app.
-3. Open **Log** and check for errors.
-4. Leave public reverse-proxy routing unchanged until the following checks pass.
-
-### Health check
-
-The default host port is **9877**, mapped to container port **8080**. Substitute your HAOS IP below if different:
+### 1. Health
 
 ```sh
 curl --silent --show-error --include --max-time 15 \
-  'http://192.168.1.8:9877/healthz'
+  'http://<HAOS-IP>:9877/healthz'
 ```
 
-`/healthz` is the upstream application's health endpoint. The `z` is intentional. A successful response indicates that the gateway is responding, not that authentication or backend tools have been validated.
+Expected: HTTP 200 with `{"status":"ok"}`. The `z` is intentional; it is the upstream health-check path. Health alone does not verify OAuth or tool execution.
 
-### Authentication check
+### 2. Unauthenticated MCP request
 
-For a backend whose MCP path is `/servers/vinted/mcp`:
+Substitute your actual backend endpoint path; this example uses `/servers/vinted/mcp`:
 
 ```sh
 curl --silent --show-error --include --max-time 15 \
-  'http://192.168.1.8:9877/servers/vinted/mcp' \
+  'http://<HAOS-IP>:9877/servers/vinted/mcp' \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   --data-raw '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"auth-check","version":"1.0.0"}}}'
 ```
 
-Without credentials, expect an authentication rejection, normally **HTTP 401**. Successful MCP initialization without authentication means protection has not been established. A 404 or 500 is not a passing security test.
+Expected: authentication rejection, normally HTTP **401**. Successful initialization without credentials means protection is not established. A 404 or 500 is not a passing security test.
 
-## Reverse proxy and HTTPS
+## Public reverse proxy
 
-Only proceed after local startup and authentication checks pass.
+Only after local tests succeed, route the **entire public hostname** through the gateway:
 
-For the existing Nginx Proxy Manager host:
+- Scheme: `http`
+- Forward host: HAOS IP
+- Forward port: `9877` (or your configured published port)
+- SSL: valid certificate and Force SSL enabled
 
-| Setting | Value |
-| --- | --- |
-| Scheme | `http` |
-| Forward hostname / IP | Your HAOS IP |
-| Forward port | `9877`, unless changed in the app's Network settings |
-| SSL certificate | Certificate matching the public hostname |
-| Force SSL | Enabled |
+Do not leave public Nginx routes pointing directly to the unauthenticated backend. OAuth discovery and login paths must reach the gateway. Avoid layering HTTP Basic authentication unless your MCP client supports it.
 
-Route the entire hostname to the gateway. Do not leave a custom location that routes the MCP path directly to the unauthenticated backend. Do not add HTTP Basic authentication on top of OAuth unless the client explicitly supports both.
+Repeat the unauthenticated MCP initialization test over public HTTPS. It should still reject the request.
 
-Nginx terminates public HTTPS; the gateway's internal listener uses HTTP. The local network hop is therefore not encrypted by this configuration. Keep it on a trusted network.
+## Connect an OAuth-capable MCP client
 
-After switching routing, repeat the unauthenticated initialization test using the public HTTPS origin. It must reject access rather than return successful MCP initialization.
-
-## Connect the MCP client
-
-Use the public origin followed by the backend's existing MCP path. For example, for the example origin above and the Vinted backend path:
+Use your public HTTPS origin **plus the existing backend's MCP path**. For example:
 
 ```text
 https://mcp.example.com/servers/vinted/mcp
 ```
 
-In Gemini, remove and re-add the previous connection if necessary to trigger a fresh authorization flow. Leave advanced client credentials blank initially to attempt automatic registration. If registration fails, capture the exact error; do not put the gateway password into the Client ID or Client secret fields.
+Complete the OAuth authorization flow, then verify tool discovery and a real tool call. In clients such as Gemini, leave Client ID and Client secret blank initially if dynamic registration is offered. Do not enter the gateway password in those fields.
 
-A complete test requires:
+The gateway forwards the original backend path; it does not automatically rename MCP endpoints.
 
-1. Successful authorization through the gateway's login flow.
-2. Tool discovery.
-3. A successful backend tool call.
-4. Rejection of an unauthenticated public initialization request.
+## Security and persistence
 
-Do not assume client compatibility from a successful health check alone.
-
-## Persistence and backups
-
-The wrapper stores OAuth state and signing material under `/data/oauth`, inside the app's persistent private storage. App options are read from `/data/options.json`.
-
-Include app data in backups and protect those backups as sensitive. Do not delete authentication state as a routine troubleshooting step; clients may need to reconnect if state is lost. Uninstalling without preserving data may require reauthorization.
-
-## Security
-
-- Keep the backend port private. Do not forward port 9876 from the router to the backend.
-- Remove any public hostname or Nginx location that bypasses the gateway.
-- Local clients may still reach an unauthenticated backend on the LAN; trust or restrict that network separately.
-- The health endpoint is intentionally available without login.
-- Do not share passwords, tokens, signing keys, options files, or authentication-state files.
-- A password change should not be assumed to revoke already issued tokens or sessions. Verify upstream revocation behavior if immediate access removal is required.
+- Do not expose the backend port directly to the internet; local LAN access to the backend may remain unauthenticated.
+- Keep the gateway password out of GitHub, logs, and screenshots. Replace any password that has been shared.
+- OAuth state and signing material persist in the app's private `/data/oauth` directory. Protect backups.
+- A masked password option is not necessarily encrypted at rest.
+- Changing the login password does not necessarily revoke already-issued tokens; consult upstream for revocation behavior.
+- Public HTTPS is encrypted; the default gateway-to-backend hop uses HTTP on your local network.
 
 ## Troubleshooting
 
 | Symptom | Check |
 | --- | --- |
-| App missing from the store | Confirm the app folder is committed to the configured repository branch, then refresh the store. |
-| Build fails | Copy the final Supervisor build error. Do not repeatedly retry an unchanged build. |
-| Password validation error | Set a password of at least 20 characters in Configuration. |
-| Connection refused on 9877 | Check app startup logs and the published port in Network settings. |
-| Health works, MCP returns 404 | Check the backend origin and the actual backend MCP path. |
-| OAuth discovery or login fails | Check that the entire public hostname reaches the gateway and that external_url exactly matches its HTTPS origin. |
-| Public initialization succeeds without login | Check for a route bypassing the gateway. Do not consider the deployment secured. |
-| Login works but tool fails | Inspect gateway and backend logs separately; an upstream API error is not necessarily an authentication failure. |
+| App not listed | Refresh the app store; confirm the repository and `config.yaml` are committed. |
+| Health check fails | Gateway startup logs and port 9877 mapping. |
+| Anonymous MCP initialization returns 401 | Expected; authentication is enforced. |
+| Login works, MCP returns 404 | Confirm backend URL and path, then check whether the request reaches the backend logs. |
+| Tool returns an upstream API error | Troubleshoot the MCP tool server independently of OAuth. |
+| Public initialization succeeds anonymously | Look for Nginx routes bypassing the gateway. |
+| Home Assistant icon is missing | Check `icon.png` and `logo.png` in the app folder and refresh the app store. |
+| Gemini icon is missing | HAOS icon/logo files are not passed through as Gemini custom-app artwork. Gemini's custom-app icon handling is a separate client feature. |
 
-Share only relevant error lines, with secrets removed.
+## Credits and limitations
 
-## Updates and upstream documentation
+- Authentication: [Sigbit MCP Auth Proxy](https://github.com/sigbit/mcp-auth-proxy)
+- Optional stdio-to-HTTP companion: [slettmayer MCP Proxy](https://github.com/slettmayer/home-assistant-apps/tree/main/mcp-proxy), based on [sparfenyuk/mcp-proxy](https://github.com/sparfenyuk/mcp-proxy)
+- Example tool server: [andrijdavid/vinted-mcp](https://github.com/andrijdavid/vinted-mcp)
 
-This wrapper pins Sigbit MCP Auth Proxy **v2.10.2**. Its Dockerfile verifies the official ARM64 executable against a fixed SHA-256. Update the release version and checksum together.
-
-- [Upstream repository](https://github.com/sigbit/mcp-auth-proxy)
-- [Upstream documentation](https://sigbit.github.io/mcp-auth-proxy/)
-- [Quick start](https://sigbit.github.io/mcp-auth-proxy/docs/quickstart/)
-
-The icon and logo identify the Home Assistant app. They do not configure Gemini's custom-app icon.
+This experimental personal-use wrapper is provided as-is, without warranty or guaranteed support. Its Home Assistant icon and logo do **not** configure an MCP client's icon.
