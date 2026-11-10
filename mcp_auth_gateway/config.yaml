@@ -1,6 +1,6 @@
 name: "MCP Auth Gateway"
 description: "OAuth authentication gateway for an existing HTTP MCP server."
-version: "0.1.0"
+version: "2.10.2"
 slug: "mcp_auth_gateway"
 url: "https://github.com/sigbit/mcp-auth-proxy"
 arch:
@@ -8,7 +8,6 @@ arch:
 startup: application
 boot: manual
 init: true
-stage: experimental
 ports:
   8080/tcp: 9877
 ports_description:

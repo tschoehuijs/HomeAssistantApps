@@ -1,0 +1,183 @@
+name: Update MCP Auth Gateway Version
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Fetch latest Sigbit release
+        id: fetch_release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          RELEASE_JSON=$(curl -fsSL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/sigbit/mcp-auth-proxy/releases/latest)
+
+          LATEST=$(echo "$RELEASE_JSON" | jq -r '.tag_name | ltrimstr("v")')
+          BODY=$(echo "$RELEASE_JSON" | jq -r '.body // ""')
+
+          if [[ -z "$LATEST" || "$LATEST" == "null" ]]; then
+            echo "Failed to retrieve a valid version."
+            exit 1
+          fi
+
+          if [[ ! "$LATEST" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Unexpected version format: $LATEST"
+            exit 1
+          fi
+
+          echo "LATEST_VERSION=$LATEST" >> "$GITHUB_ENV"
+
+          {
+            echo "# Changelog"
+            echo
+            echo "## $LATEST"
+            echo
+            echo "$BODY"
+          } > mcp_auth_gateway/CHANGELOG.md
+
+          {
+            echo "Sigbit MCP Auth Proxy upstream release: $LATEST"
+            echo
+            echo "$BODY"
+          } > mcp_auth_gateway/RELEASE_NOTES.md
+
+      - name: Fetch and verify ARM64 checksum
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          VERSION="${{ env.LATEST_VERSION }}"
+
+          RELEASE_JSON=$(curl -fsSL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/sigbit/mcp-auth-proxy/releases/tags/v${VERSION}")
+
+          ASSET=$(echo "$RELEASE_JSON" | jq -c '
+            .assets[]
+            | select(.name == "mcp-auth-proxy-linux-arm64")
+          ')
+
+          if [[ -z "$ASSET" ]]; then
+            echo "ARM64 binary not found in release."
+            exit 1
+          fi
+
+          EXPECTED_SHA=$(echo "$ASSET" | jq -r '
+            .digest // empty
+            | sub("^sha256:"; "")
+          ')
+
+          if [[ ! "$EXPECTED_SHA" =~ ^[a-fA-F0-9]{64}$ ]]; then
+            echo "Valid ARM64 SHA-256 digest unavailable."
+            exit 1
+          fi
+
+          DOWNLOAD_URL=$(echo "$ASSET" | jq -r '.browser_download_url')
+
+          curl -fsSL \
+            --retry 3 \
+            "$DOWNLOAD_URL" \
+            -o /tmp/mcp-auth-proxy-linux-arm64
+
+          ACTUAL_SHA=$(sha256sum \
+            /tmp/mcp-auth-proxy-linux-arm64 | awk '{print $1}')
+
+          if [[ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]]; then
+            echo "ARM64 checksum verification failed."
+            exit 1
+          fi
+
+          echo "ARM64 checksum verified: $ACTUAL_SHA"
+          echo "ARM64_SHA=$ACTUAL_SHA" >> "$GITHUB_ENV"
+
+      - name: Update config.yaml
+        run: |
+          set -euo pipefail
+
+          sed -i \
+            "s/^version: .*/version: \"${{ env.LATEST_VERSION }}\"/" \
+            mcp_auth_gateway/config.yaml
+
+      - name: Update Dockerfile
+        run: |
+          set -euo pipefail
+
+          DOCKERFILE="mcp_auth_gateway/Dockerfile"
+
+          sed -i -E \
+            "s/ARG MCP_AUTH_VERSION=.*/ARG MCP_AUTH_VERSION=${{ env.LATEST_VERSION }}/" \
+            "$DOCKERFILE"
+
+          sed -i -E \
+            "s/[a-fA-F0-9]{64}  \/usr\/local\/bin\/mcp-auth-proxy/${{ env.ARM64_SHA }}  \/usr\/local\/bin\/mcp-auth-proxy/" \
+            "$DOCKERFILE"
+
+          grep -q \
+            "ARG MCP_AUTH_VERSION=${{ env.LATEST_VERSION }}" \
+            "$DOCKERFILE"
+
+          grep -q \
+            "${{ env.ARM64_SHA }}  /usr/local/bin/mcp-auth-proxy" \
+            "$DOCKERFILE"
+
+      - name: Commit and push if changed
+        id: commit
+        run: |
+          set -euo pipefail
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email \
+            "github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            mcp_auth_gateway/config.yaml \
+            mcp_auth_gateway/Dockerfile \
+            mcp_auth_gateway/CHANGELOG.md
+
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes detected."
+          else
+            git commit -m \
+              "Bump MCP Auth Gateway to ${{ env.LATEST_VERSION }}"
+
+            git push
+
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          TAG="mcp-auth-gateway-v${{ env.LATEST_VERSION }}"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists. Skipping."
+          else
+            gh release create "$TAG" \
+              --title "MCP Auth Gateway ${{ env.LATEST_VERSION }}" \
+              --notes-file mcp_auth_gateway/RELEASE_NOTES.md \
+              --target main
+          fi
