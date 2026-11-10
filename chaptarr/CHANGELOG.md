@@ -1,14 +1,10 @@
 # Changelog
 
-## 0.9.965
+## 0.9.1000
 
 ## What's Changed
-* UI: Adjust "Add New" search bar layout and provider dropdown caret styling by @jberlyn in https://github.com/Chaptarr/chaptarr/pull/125
-* Fix MAM account refresh after snatch_summary response change by @jjbobzin in https://github.com/Chaptarr/chaptarr/pull/189
+* Page the migration 126 and 128 backfills so large PostgreSQL libraries can upgrade by @robertlordhood in https://github.com/Chaptarr/chaptarr/pull/357
 
-## New Contributors
-* @jberlyn made their first contribution in https://github.com/Chaptarr/chaptarr/pull/125
-* @jjbobzin made their first contribution in https://github.com/Chaptarr/chaptarr/pull/189
 
-**Full Changelog**: https://github.com/Chaptarr/chaptarr/compare/v0.9.958...v0.9.965
+**Full Changelog**: https://github.com/Chaptarr/chaptarr/compare/v0.9.999...v0.9.1000
 
