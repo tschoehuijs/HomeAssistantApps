@@ -1,11 +1,44 @@
 # Changelog
 
-## 3.1.7
+## 3.2.0
 
-# Tracearr v3.1.7
+# Tracearr v3.2.0 - tofa servers, guided first-run setup, and single sign-on only
+
+**Back up before upgrading. Request ids are stored differently from this release on, so going back to an older version needs that backup**
+
+### tofa
+Tracearr now monitors tofa servers: live sessions, library, history import and tofa's built-in requests. Connect one by signing in to tofa, in setup or Settings → Servers, with no API key to paste. The owner and members can sign in with their tofa account too. tofa 0.13.3 or newer is needed. [Docs](https://docs.tracearr.com/getting-started/first-server#tofa)
+
+### First-run setup
+A fresh install walks through signing in, connecting a server and importing history. Add Server offers the same import step later, and a new server starts its first library sync right away instead of waiting for the next scheduled one. [Docs](https://docs.tracearr.com/getting-started/first-server#initial-setup)
+
+### Single sign-on only
+With OIDC configured, a new switch under Settings → Access → Sign-in makes your identity provider the only way admins and members sign in. The login page then shows just the single sign-on button; your own password, Plex and tofa sign-in stay available at /login?all for when the identity provider is down. [Docs](https://docs.tracearr.com/configuration/member-sign-in#single-sign-on-only)
+
+### History imports
+Imports start without waiting on the media server, and on a new server they wait for its first library sync. A failed Tautulli, Jellystat or Playback Reporting import now tries again on its own, while a rejected API key fails at once with the reason on the import card. [Docs](https://docs.tracearr.com/getting-started/import)
+
+### New
+- New media server: tofa, with live sessions, library, history import and its built-in requests
+- Connect a tofa server or sign in to Tracearr with a tofa account, with no API key to paste
+- Option under Settings → Access → Sign-in to make single sign-on the only way admins and members sign in (#1423)
+- Seerr requests for a title in no library show Seerr's poster when Seerr's image caching is on
+
+### Improved
+- First-run setup and Add Server walk through signing in, connecting a server and importing history
+- A new or re-added server starts its first library sync at once and fills in its growth history
+- History imports start right away, retry on their own up to 3 times, and no longer wait behind a growth backfill
+- People without a display name show their Tracearr username everywhere, the public API included
+- Live TV shows the program on air on every server, with its show, episode and art, and the channel under the title (#1441)
+- Refreshed theme and map colors with better light-mode contrast, and the Inter font no longer loads from Google
 
 ### Fixes
-- Posters load on Library, Browse, media pages and Your requests when Tracearr runs under BASE_PATH (#1425)
+- Jellyfin shows Direct Play, Direct Stream or Transcode by what the server does, music and remuxes included (#1428)
+- Episodes whose TVDB ids differ are no longer merged into one, even with the same IMDb id
+- People's pictures follow their media server accounts and update at sync, your own in the sidebar included
+- Signing out of single sign-on returns to the login page; you stay signed in at the identity provider (#1445)
 
-Other release notes: https://github.com/connorgallopo/Tracearr/releases/tag/v3.1.0
+### Notes
+- A tofa server needs version 0.13.3 or newer
+- A person's name no longer follows a rename on the media server; set a display name to change it
 
